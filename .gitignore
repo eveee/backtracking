@@ -45,3 +45,9 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+backtracking.cbp
+backtracking.depend
+*.exe
+obj/Debug/main.o
+*.o
+backtracking.layout

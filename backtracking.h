@@ -5,6 +5,8 @@
 #include <cmath>
 #include <vector>
 
+using namespace std;
+
   struct particle // index of a particle in the swarm and its fitness
   {
         int index;
@@ -13,26 +15,26 @@
 
 //=======================================================================
   class Problem
-  {
+{
 	public:
-		Problem();
+		Problem(int);
 		~Problem();
-
+/*
 		friend ostream& operator<< (ostream& os, const Problem& pbm);
 		friend istream& operator>> (istream& is, Problem& pbm);
 
 		Problem& operator=  (const Problem& pbm);
 		bool operator== (const Problem& pbm) const;
 		bool operator!= (const Problem& pbm) const;
-
+*/
 		//Direction direction () const; //Maximize or Minimize
 		int dimension() const;
 		double LowerLimit, UpperLimit;
-
+		double evaluate(std::vector<double>);
 	private:
 		int _dimension;
 		int fct_id;
-  };
+};
 //=======================================================================
 class Solution
   {
@@ -42,14 +44,14 @@ class Solution
 		Solution (const Solution& sol);
 		~Solution();
 
- 		friend ostream& operator<< (ostream& os, const Solution& sol);
-		friend istream& operator>> (istream& is, Solution& sol);
+ 		/*friend ostream& operator<< (ostream& os, const Solution& sol);
+		friend istream& operator>> (istream& is, Solution& sol);*/
 
 		const Problem& pbm() const;
 
-		Solution& operator=  (const Solution& sol);
+		/*Solution& operator=  (const Solution& sol);
 		bool operator== (const Solution& sol) const;
-		bool operator!= (const Solution& sol) const;
+		bool operator!= (const Solution& sol) const;*/
 
 		void initialize();
 		double fitness();
@@ -82,15 +84,15 @@ class Solution
 		unsigned int   _solution_size;	        // size of each particle
 
 	public:
-		SetUpParams ();
+		SetUpParams (unsigned int independent_runs, unsigned int nb_evolution_steps, unsigned int population_size, unsigned int solution_size);
 
  		friend ostream& operator<< (ostream& os, const SetUpParams& setup);
 		friend istream& operator>> (istream& is, SetUpParams& setup);
 
-		const unsigned int   independent_runs() const;
-		const unsigned int   nb_evolution_steps() const;
-		const unsigned int   population_size() const;
-		const unsigned int   solution_size() const;
+		const unsigned int independent_runs() const;
+		const unsigned int nb_evolution_steps() const;
+		const unsigned int population_size() const;
+		const unsigned int solution_size() const;
 		void independent_runs(const unsigned int val);
 		void nb_evolution_steps(const unsigned int val);
 		void population_size(const unsigned int val);
@@ -113,14 +115,14 @@ class Solution
 		MyAlgorithm(const Problem& pbm,const SetUpParams& setup);
 		~MyAlgorithm();
 
-		friend ostream& operator<< (ostream& os, const MyAlgorithm& myAlgo);
+		/*friend ostream& operator<< (ostream& os, const MyAlgorithm& myAlgo);
 		friend istream& operator>> (istream& is, MyAlgorithm& myAlgo);
-		MyAlgorithm& operator= (const MyAlgorithm& myAlgo);
+		MyAlgorithm& operator= (const MyAlgorithm& myAlgo);*/
 		const SetUpParams& setup() const;
 	  	void initialize();
 
 		// creates a array with fitness of all solutions in MyAlgorithm and its position in the MyAlgorithm
-        void evaluate();
+        void evaluate(Problem& pbm);
 
 	 	const vector<Solution*>& solutions() const;
 		unsigned int upper_cost() const;
