@@ -25,18 +25,18 @@
 		bool operator== (const Problem& pbm) const;
 		bool operator!= (const Problem& pbm) const;
 
-		Direction direction () const; //Maximize or Minimize
+		//Direction direction () const; //Maximize or Minimize
 		int dimension() const;
 		double LowerLimit, UpperLimit;
 
 	private:
-
 		int _dimension;
+		int fct_id;
   };
 //=======================================================================
 class Solution
   {
-	//contient la dï¿½claration d'une solution
+	//contient la déclaration d'une solution
 	public:
 		Solution (const Problem& pbm);
 		Solution (const Solution& sol);
@@ -73,7 +73,7 @@ class Solution
 
    class SetUpParams
   {
-  	//ici vous devez mettre quelques paramï¿½tres tels que :
+  	//ici vous devez mettre quelques paramètres tels que :
 
 	private:
 		unsigned int   _independent_runs;         //number of independent runs
