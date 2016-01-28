@@ -30,7 +30,7 @@ using namespace std;
 		//Direction direction () const; //Maximize or Minimize
 		int dimension() const;
 		double LowerLimit, UpperLimit;
-		double evaluate(std::vector<double>);
+		double evaluate(std::vector<double>) const;
 	private:
 		int _dimension;
 		int fct_id;
@@ -122,7 +122,7 @@ class Solution
 	  	void initialize();
 
 		// creates a array with fitness of all solutions in MyAlgorithm and its position in the MyAlgorithm
-        void evaluate(Problem& pbm);
+        void evaluate(const Problem& pbm);
 
 	 	const vector<Solution*>& solutions() const;
 		unsigned int upper_cost() const;

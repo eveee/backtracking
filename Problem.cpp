@@ -1,4 +1,4 @@
-#include "Problem.h"
+#include "backtracking.h"
 #include <cmath>
 
 Problem::Problem(int _id):fct_id(_id)
@@ -14,7 +14,7 @@ Problem::~Problem()
     //dtor
 }
 
-double Problem::evaluate(std::vector<double> x)
+double Problem::evaluate(std::vector<double> x) const
 {
     switch (fct_id)
     {

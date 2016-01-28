@@ -52,8 +52,8 @@ void SetUpParams::solution_size(const unsigned int val){
 }
 
 SetUpParams::~SetUpParams() {
-	delete &_independent_runs;
+	/*delete &_independent_runs;
 	delete &_nb_evolution_steps;
 	delete &_population_size;
-	delete &_solution_size;
+	delete &_solution_size;*/
 }
