@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "backtracking.h"
 
 Solution::Solution(const Problem& pbm) :
@@ -9,7 +8,7 @@ Solution::Solution(const Problem& pbm) :
 
 Solution::Solution(const Solution& sol) :
 	_pbm(sol.pbm())
-	, _current_fitness(NULL)
+	, _current_fitness(sol.get_fitness())
 	,_solution(sol.size())
 {}
 
@@ -27,7 +26,7 @@ void Solution::initialize() {
 
 
 
-double Solution::get_fitness() {
+double Solution::get_fitness() const{
 	return _current_fitness;
 }
 
@@ -38,6 +37,11 @@ unsigned int Solution::size() const{
 vector<double>& Solution::solution() {
 	return _solution;
 }
+
+void Solution::set_solution(vector <double>& solution) {
+	_solution = solution;
+}
+
 
 const Problem& Solution::pbm() const {
 	return _pbm;
