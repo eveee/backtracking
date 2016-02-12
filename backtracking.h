@@ -54,8 +54,10 @@ class Solution
 		bool operator!= (const Solution& sol) const;*/
 
 		void initialize();
-		double fitness();
-		double get_fitness();
+		//double fitness();
+		double get_fitness() const;
+		void set_solution(vector <double>&);
+		void set_fitness(double);
 
 		unsigned int size() const;
 
