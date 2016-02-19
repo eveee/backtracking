@@ -29,6 +29,22 @@ double Problem::evaluate(std::vector<double> x) const
         return *p06_f(_dimension, 1, &x[0]);
     case 4: //ackley's function
        return  *p09_f(_dimension, 1, &x[0]);
+    case 5: //schaffer
+        double fit;
+        for (int i = 0; i <= _dimension-1; i++)
+            fit = 0.5 + (sin(x[i] * x[i] - x[i+1] * x[i+1]) * sin(x[i] * x[i] - x[i+1] * x[i+1]) - 0.5) / ((1 + 0.001*(x[i] * x[i] + x[i+1] * x[i+1])) * (1 + 0.001*(x[i] * x[i] + x[i+1] * x[i+1])));
+        return fit;
+    case 6: //weierstrass
+        double a = 0.5, b = 3;
+        int kmax = 30;
+        double fit2 = 0, s = 0;
+        for (int i = 0; i<_dimension; i++)
+            for (int k = 0; k <= kmax; k++)
+                fit2 += pow(a, k)*cos(2 * M_PI*pow(b, k)*(x[i] + 0.5));
+        for (int k = 0; k <= kmax; k++)
+            s += pow(a, k)*cos(2 * M_PI*pow(b, k)*0.5);
+        s = s*_dimension;
+        return fit2 - s;
     }
     return 0;
 }
