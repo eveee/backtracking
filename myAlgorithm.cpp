@@ -1,62 +1,147 @@
 #include "backtracking.h"
 
-using namespace std;
+MyAlgorithm::MyAlgorithm(const Problem& pbm, const SetUpParams& setup):
+_pbm(pbm), _setup(setup)
+{
+	initialize();
+	evaluate();
+	_upper_cost = best_cost();
+	_lower_cost = worst_cost();
+}
 
-MyAlgorithm::MyAlgorithm(const Problem& pbm,const SetUpParams& setup):
-    _setup(setup)
-    ,_upper_cost(0), _lower_cost(0)
-	, _fitness_values()
-	//,_solutions({})
-{}
+MyAlgorithm::~MyAlgorithm()
+{
 
-MyAlgorithm::~MyAlgorithm() {}
+}
 
-const SetUpParams& MyAlgorithm::setup() const{
+
+ostream& operator << (ostream& os, const MyAlgorithm& myAlgo)
+{
+	os << "Population :" << endl << endl;
+	for(unsigned int i = 0; i < myAlgo._setup.population_size(); i++)
+		os << "{" << myAlgo.solution(i) << "}" << endl;
+	os << endl << "Problème :" << endl << endl << myAlgo.problem() << endl << endl;
+	os << "Paramètres :" << endl << endl << myAlgo.setup();
+	return os;
+}
+
+istream& operator >> (istream& is, MyAlgorithm& myAlgo)
+{
+	return is;
+}
+
+
+MyAlgorithm& MyAlgorithm::operator = (const MyAlgorithm& myAlgo)
+{
+	if(this != &myAlgo) {
+		_solutions = myAlgo.solutions();
+		_upper_cost = myAlgo.problem().UpperLimit;
+		_lower_cost = myAlgo.problem().LowerLimit;
+		evaluate();
+	}
+	return *this;
+}
+
+
+const Problem& MyAlgorithm::problem() const
+{
+	return _pbm;
+}
+
+
+const SetUpParams& MyAlgorithm::setup() const
+{
     return _setup;
 }
 
-void MyAlgorithm::initialize(){
-}
-
-unsigned int MyAlgorithm::upper_cost() const{
+double MyAlgorithm::upper_cost() const
+{
     return _upper_cost;
 }
 
-unsigned int MyAlgorithm::lower_cost() const{
+double MyAlgorithm::lower_cost() const
+{
     return _lower_cost;
 }
 
-const vector<Solution*>& MyAlgorithm::solutions() const{
+
+const vector<Solution*>& MyAlgorithm::solutions() const
+{
     return _solutions;
 }
 
-vector<struct particle>& MyAlgorithm::fitness_values(){
+Solution& MyAlgorithm::solution(const unsigned int index) const
+{
+    return *_solutions.at(index);
+}
+
+vector<struct particle>& MyAlgorithm::fitness_values()
+{
     return _fitness_values;
 }
 
-Solution& MyAlgorithm::solution(const unsigned int index) const{
-    return *_solutions[index];
+double MyAlgorithm::fitness(const unsigned int index) const
+{
+    return _fitness_values.at(index).fitness;
 }
 
-double MyAlgorithm::fitness(const unsigned int index) const{
-    return _fitness_values[index].fitness;
+
+double MyAlgorithm::best_cost() const
+{
+	double best = fitness(0);
+	for(unsigned int i = 1; i < setup().population_size(); i++)
+		best = (fitness(i) > best ? fitness(i) : best);
+	return best;
 }
 
-void MyAlgorithm::evaluate(const Problem& pbm){
-	double min = 0;
-	vector<struct particle> fitness(1);
-	vector<double> cmin(1);
-	vector<double> coord(1);
-    for(int i=0; i<_setup.nb_evolution_steps(); i++){
-		cout << i << endl;
-        coord[0] = i;
-        if(pbm.evaluate(coord) < min){
-            min = pbm.evaluate(coord);
-            cmin = coord;
-        }
-    }
-	fitness[0].fitness = min;
-	cout << min << endl;
-    //_fitness_values[0].fitness = min;
+double MyAlgorithm::worst_cost() const
+{
+	double worst = fitness(0);
+		for(unsigned int i = 0; i < setup().population_size(); i++)
+			worst = (fitness(i) < worst ? fitness(i) : worst);
+		return worst;
+}
+
+Solution& MyAlgorithm::best_solution() const
+{
+	double fit = best_cost();
+	for(unsigned int i = 0; i < setup().population_size(); i++)
+			if(fitness(i) == fit)
+				return solution(i);
+	return best_solution();
+}
+
+Solution& MyAlgorithm::worst_solution() const
+{
+	double fit = worst_cost();
+	for(unsigned int i = 0; i < setup().population_size(); i++)
+			if(fitness(i) == fit)
+				return solution(i);
+	return worst_solution();
+}
+
+
+void MyAlgorithm::initialize()
+{
+	srand(time(NULL));
+	for(unsigned int i = 0; i < _setup.population_size(); i++) {
+		Solution *sol = new Solution(_pbm);
+		sol->initialize(rand() + 1);
+		_solutions.push_back(sol);
+	}
+}
+
+void MyAlgorithm::evaluate()
+{
+	_fitness_values.clear();
+	for(unsigned int i = 0; i < setup().population_size(); i++) {
+		struct particle part = {i, solution(i).get_fitness()};
+		_fitness_values.push_back(part);
+	}
+}
+
+
+void MyAlgorithm::evolution(int iter)
+{
 
 }
