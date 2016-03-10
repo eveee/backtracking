@@ -1,14 +1,13 @@
 #ifndef INC_METAHEURISTIC
 #define INC_METAHEURISTIC
 
-#define PI 3.14159265359
-
 #include <iostream>
 #include <fstream>
 #include <cmath>
 #include <vector>
 #include <stdlib.h>
 #include <time.h>
+#include <stdexcept>
 
 using namespace std;
 
@@ -168,7 +167,7 @@ public:
 	void initialize();														//Génère une population aléatoirement
 	void evaluate();														//Construit le tableau de fitness de la population
 
-	void evolution(int); 													//Effectue une itération (contient l'algorithme génétique)
+	void evolution(unsigned int); 											//Effectue une itération (contient l'algorithme génétique)
 
 private:
 
@@ -177,6 +176,7 @@ private:
 	vector<Solution*> _solutions;    										//Population de solutions
 	vector<struct particle> _fitness_values;								//Fitness de la population
 	double _upper_cost, _lower_cost;										//Plus haute et basse fitness
+	double mixrate;															//Paramètre de contrôle du crossover
 
 };
 

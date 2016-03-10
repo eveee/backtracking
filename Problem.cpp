@@ -8,9 +8,6 @@ Problem::Problem()
 Problem::Problem(unsigned int _id, unsigned int _dim, bool _dir):fct_id(_id), _dimension(_dim), _direction(_dir)
 {
 	switch (fct_id) {
-		case 0:
-			test_limits();
-			break;
 		case 1:
 			rosenbrock_limits();
 			break;
@@ -30,7 +27,7 @@ Problem::Problem(unsigned int _id, unsigned int _dim, bool _dir):fct_id(_id), _d
 			weierstrass_limits();
 			break;
 		default:
-			throw string("Erreur : ID inconnu");
+			throw logic_error("ID inconnu");
 	}
 }
 
@@ -125,10 +122,8 @@ double Problem::evaluate(vector<double> &x) const
 {
 	for (unsigned int i = 0; i < _dimension; i++)
 			if (x.at(i) > UpperLimit || x.at(i) < LowerLimit)
-				throw string("Erreur : coordonnées interdites");
+				throw logic_error("Coordonnées interdites");
 	switch (fct_id) {
-	case 0: //Fonction de test (f(x) = 1^x * x%50)
-		return test_function(x);
 	case 1:
 		return rosenbrock_function(x);
 	case 2:
@@ -142,7 +137,7 @@ double Problem::evaluate(vector<double> &x) const
 	case 6:
 		return weierstrass_function(x);
 	default:
-		throw string("Erreur : ID inconnu");
+		throw logic_error("ID inconnu");
 	}
 }
 
@@ -162,7 +157,7 @@ double Problem::rosenbrock_function(vector<double> &arguments) const
 		f += pow(1.0 - tmp, 2) + 100 * pow((tmp - pow(tmp, 2)), 2);
 	}
 	return f;
-}
+} //Minimum global : (1, 1, ... 1) = 0
 
 void Problem::rastrigin_limits()
 {
@@ -176,7 +171,7 @@ double Problem::rastrigin_function(vector<double> &arguments) const
 	double f = (double) (10 * _dimension), tmp;
 	for (unsigned int i = 0; i < _dimension; i++) {
 		tmp = arguments.at(i);
-		f += pow(tmp, 2) - 10.0 * cos(2.0 * PI * tmp);
+		f += pow(tmp, 2) - 10.0 * cos(2.0 * M_PI * tmp);
 	} return f;
 }
 
@@ -193,7 +188,7 @@ double Problem::ackley_function(vector<double> &arguments) const
 	for (unsigned int i = 0; i < _dimension; i++) {
 		tmp = arguments.at(i);
 		s1 = s1 + pow(tmp, 2);
-		s2 = s2 + cos(0.2 * PI * tmp);
+		s2 = s2 + cos(0.2 * M_PI * tmp);
 	}
 	return (-20.0 * exp(-0.2 * sqrt(s1 / (double) (_dimension))) - exp(s2 / (double) (_dimension)) + 20.0 + exp(1.0));
 }
@@ -247,26 +242,9 @@ double Problem::weierstrass_function(vector<double> &arguments) const
 	double a = 0.5, b = 3, f = 0, s = 0;
 	for (unsigned int i = 0; i < _dimension; i++)
 		for (int j = 0; j <= 100; j++)
-			f += pow(a, j) * cos(2 * PI * pow(b, j) * (arguments.at(i) + 0.5));
+			f += pow(a, j) * cos(2 * M_PI * pow(b, j) * (arguments.at(i) + 0.5));
 	for (int j = 0; j <= 100; j++)
-		s += pow(a, j) * cos(2 * PI * pow(b, j) * 0.5);
+		s += pow(a, j) * cos(2 * M_PI * pow(b, j) * 0.5);
 	s *= _dimension;
 	return (f - s);
-}
-
-//Partie test:
-
-void Problem::test_limits()
-{
-	LowerLimit = -100.0;
-	UpperLimit = 100.0;
-	return;
-}
-
-double Problem::test_function(vector<double> &arguments) const
-{
-	double f = 0.0;
-	for (unsigned int i = 0; i < arguments.size(); i++)
-		f = pow(-1, arguments.at(i)) * (double) ((int) arguments.at(i) % 10);
-	return f;
 }

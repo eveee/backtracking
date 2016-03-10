@@ -28,7 +28,7 @@ ostream& operator << (ostream& os, const Solution& sol)
 
 istream& operator >> (istream& is, Solution& sol)
 {
-	for(unsigned int i = 0; i < sol.size(); i++)
+	for(unsigned int i; i < sol.size(); i++)
 		is >> sol._solution.at(i);
 	return is;
 }
@@ -46,7 +46,7 @@ Solution& Solution::operator = (const Solution& sol)
 
 bool Solution::operator == (const Solution& sol) const
 {
-	for(unsigned int i = 0; i < sol.size(); i++)
+	for(unsigned int i; i < sol.size(); i++)
 		if(sol.position(i) != position(i))
 			return false;
 	return (_pbm == sol.problem() && _current_fitness == sol.get_fitness());
@@ -54,7 +54,7 @@ bool Solution::operator == (const Solution& sol) const
 
 bool Solution::operator != (const Solution& sol) const
 {
-	for(unsigned int i = 0; i < sol.size(); i++)
+	for(unsigned int i; i < sol.size(); i++)
 			if(sol.position(i) != position(i))
 				return true;
 		return (_pbm != sol.problem() || _current_fitness != sol.get_fitness());
@@ -93,7 +93,7 @@ void Solution::set_solution(vector <double>& sol)
 	if(sol.size() == _pbm.dimension())
 		_solution = sol;
 	else
-		throw string("Erreur : dimension de la solution invalide");
+		throw logic_error("Dimension de la solution invalide");
 }
 
 void Solution::position(const unsigned int index, const double value)
@@ -112,9 +112,11 @@ void Solution::initialize(int init)
 {
 	srand(init == 0 ? time(NULL) : init); double random;
 	for(unsigned int i = 0; i < size(); i++) {
-		for(int j = 0; j < rand()%100; j++)
-			random = rand();
-		random = (random/(double)RAND_MAX) * (_pbm.UpperLimit-_pbm.LowerLimit) + _pbm.LowerLimit;
+		do {
+			for(int j = 0; j < rand()%100; j++)
+				random = rand();
+			random = (random/(double)RAND_MAX) * (_pbm.UpperLimit-_pbm.LowerLimit) + _pbm.LowerLimit;
+		} while(random < _pbm.LowerLimit || random > _pbm.UpperLimit);
 		position(i, random);
 	}
 	fitness();

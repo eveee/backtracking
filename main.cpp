@@ -1,4 +1,3 @@
-#include <iostream>
 #include "backtracking.h"
 
 using namespace std;
@@ -76,7 +75,7 @@ void params_test()
 
 void algo_test()
 {
-	Problem pb = Problem(1, 1, true);
+	Problem pb = Problem(1, 2, true);
 	SetUpParams params;
 
 	cout << "---Test de l'algorithme---" << endl << endl;
@@ -97,13 +96,34 @@ void algo_test()
 	cout << endl << "---Fin du test de l'algorithme---" << endl << endl;
 }
 
+void bsa_test(int id, int dim, int pop, int steps, int runs, bool max)
+{
+	Problem pb = Problem(id, dim, max);
+	SetUpParams params(runs, steps, pop, dim); //par défaut : 30, 20, 40, 2000000
+
+	cout << "---Test---" << endl << endl;
+	MyAlgorithm algo = MyAlgorithm(pb, params);
+	algo.evolution(0);
+	cout << (max ? algo.best_solution() : algo.worst_solution()) << endl;
+	cout << endl << "---Fin du test---" << endl << endl;
+}
+
 
 int main()
 {
 	//problem_test();
 	//solution_test();
 	//params_test();
-	algo_test();
+	//algo_test();
+
+	bsa_test(1, 20, 40, 200000, 0, false);
+
+	Problem pb = Problem(1, 20, false);
+	Solution sol(pb);
+	for(unsigned int i = 0; i < pb.dimension(); i++)
+		sol.position(i, 0);
+	sol.fitness();
+	cout << sol;
 
 	return 0;
 }

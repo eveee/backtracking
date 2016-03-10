@@ -7,6 +7,7 @@ _pbm(pbm), _setup(setup)
 	evaluate();
 	_upper_cost = best_cost();
 	_lower_cost = worst_cost();
+	mixrate = 1;
 }
 
 MyAlgorithm::~MyAlgorithm()
@@ -141,7 +142,100 @@ void MyAlgorithm::evaluate()
 }
 
 
-void MyAlgorithm::evolution(int iter)
+void MyAlgorithm::evolution(unsigned int iter)
 {
+	if(iter == _setup.nb_evolution_steps())
+		return;
+
+	srand(time(NULL) + iter);
+
+	//Initilization
+
+	Solution *u = new Solution(_pbm);	//Vecteur uniforme de LowerLimit à UpperLimit
+	for(unsigned int i = 0; i < _pbm.dimension(); i++)
+		u->position(i, _pbm.LowerLimit + i * ((_pbm.UpperLimit - _pbm.LowerLimit) / (_pbm.dimension() - 1)));
+	_upper_cost = best_cost();
+	_lower_cost = worst_cost();
+
+	//Selection-I
+
+	vector<Solution*> oldP(_setup.population_size());
+	for(unsigned int i = 0; i < _setup.population_size(); i++) {
+		oldP.at(i) = new Solution(_pbm);
+		for(unsigned int j = 0; j < _pbm.dimension(); j++)
+			if(rand() < rand())
+				oldP.at(i)->position(j, _solutions.at(i)->position(j));
+			else
+				oldP.at(i)->position(j, u->position(rand() % _pbm.dimension()));
+	}
+
+	for (unsigned int i = _setup.population_size() - 1; i > 0; --i)
+	    swap(oldP.at(i), oldP.at(rand() % (_setup.population_size())));
+
+	//Mutation
+
+	vector<Solution*> Mutant(_setup.population_size(), new Solution(_pbm));
+	for(unsigned int i = 0; i < _setup.population_size(); i++)
+		Mutant.at(i) = new Solution(_pbm);
+	double F = (double)(rand() % 3000) / 10000;
+	for(unsigned int i = 0; i < _setup.population_size(); i++)
+		for(unsigned int j = 0; j < _pbm.dimension(); j++)
+			Mutant.at(i)->position(j, (_solutions.at(i)->position(j) + (F * (oldP.at(i)->position(j) - _solutions.at(i)->position(j)))));
+
+	//Crossover
+
+	vector<vector<bool> > map(_setup.population_size(), vector<bool> (_pbm.dimension(), false));
+	if(rand() < rand()) {
+		vector<unsigned int > v(_pbm.dimension());
+		for(unsigned int i = 0; i < _pbm.dimension(); )
+					v.at(i = ++i);
+		for(unsigned int i = 0; i < _setup.population_size(); i++) {
+			for(unsigned int i = 0; i < rand() % 100; i++)
+				swap(v.at(rand() % _pbm.dimension()), v.at(rand() % _pbm.dimension()));
+			for(unsigned int i = 0; i < ceil(mixrate * (double)(rand() % 1001) / 1000 * _pbm.dimension()); i++)
+				map.at(i).at(v.at(i)) = true;
+		}
+	} else
+		for(unsigned int i = 0; i < _setup.population_size(); i++)
+			map.at(i).at(rand() % _pbm.dimension()) = true;
+
+	vector<Solution*> Trial(_setup.population_size(), new Solution(_pbm));
+	for(unsigned int i = 0; i < _setup.population_size(); i++)
+		for(unsigned int j = 0; j < _pbm.dimension(); j++)
+			if(map.at(i).at(j)) {
+				Trial.at(i)->position(j, _solutions.at(i)->position(j));
+				Trial.at(i)->fitness();
+			} else {
+				Trial.at(i)->position(j, Mutant.at(i)->position(j));
+				if(Trial.at(i)->position(j) < _pbm.LowerLimit || Trial.at(i)->position(j) > _pbm.UpperLimit)
+					Trial.at(i)->position(j, _pbm.UpperLimit + rand() % _pbm.dimension() * (_pbm.UpperLimit - _pbm.LowerLimit));
+				Trial.at(i)->fitness();
+			}
+
+	//Selection-II
+
+	if(_pbm.direction()) {
+		for(unsigned int i = 0; i < _setup.population_size(); i++) {
+			if(Trial.at(i)->get_fitness() > _solutions.at(i)->get_fitness())
+				for(unsigned int j = 0; j < _pbm.dimension(); j++)
+					_solutions.at(i)->position(j, Trial.at(i)->position(j));
+			_solutions.at(i)->fitness();
+		}
+
+		if(best_cost() > upper_cost())
+			_upper_cost = best_cost();
+	} else {
+		for(unsigned int i = 0; i < _setup.population_size(); i++) {
+			if(Trial.at(i)->get_fitness() < _solutions.at(i)->get_fitness())
+				for(unsigned int j = 0; j < _pbm.dimension(); j++)
+					_solutions.at(i)->position(j, Trial.at(i)->position(j));
+			_solutions.at(i)->fitness();
+		}
+
+		if(worst_cost() < lower_cost())
+			_lower_cost = worst_cost();
+	}
+
+	evolution(++iter);
 
 }
